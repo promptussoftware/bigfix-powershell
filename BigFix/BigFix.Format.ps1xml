@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+    <ViewDefinitions>
+        <View>
+            <Name>Server</Name>
+            <ViewSelectedBy>
+                <TypeName>BigFix.WebReports.Server</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader/>
+                    <TableColumnHeader/>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem><PropertyName>Uri</PropertyName></TableColumnItem>
+                            <TableColumnItem><PropertyName>Wsdl</PropertyName></TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        <View>
+            <Name>Session</Name>
+            <ViewSelectedBy>
+                <TypeName>BigFix.WebReports.Session</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader><Label>Server</Label></TableColumnHeader>
+                    <TableColumnHeader/>
+                    <TableColumnHeader><Label>Credential</Label></TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem>
+                              <ScriptBlock>
+                                if ($_.Server) { $_.Server.Uri } else { '' }
+                              </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem><PropertyName>State</PropertyName></TableColumnItem>
+                            <TableColumnItem>
+                              <ScriptBlock>
+                                if ($_.Credential -and $_.Credential.UserName) { $_.Credential.UserName } else { '' }
+                              </ScriptBlock>
+                            </TableColumnItem>                            
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+        <View>
+            <Name>SessionRelevanceResult</Name>
+            <ViewSelectedBy>
+                <TypeName>BigFix.SessionRelevanceResult</TypeName>
+            </ViewSelectedBy>
+            <TableControl>
+                <TableHeaders>
+                    <TableColumnHeader/>
+                    <TableColumnHeader><Label>Status</Label></TableColumnHeader>
+                    <TableColumnHeader><Label>Execution Time</Label></TableColumnHeader>
+                    <TableColumnHeader><Label>Evaluation Time</Label></TableColumnHeader>
+                    <TableColumnHeader><Label>Result Count</Label></TableColumnHeader>
+                    <TableColumnHeader><Label>Result</Label></TableColumnHeader>
+                </TableHeaders>
+                <TableRowEntries>
+                    <TableRowEntry>
+                        <TableColumnItems>
+                            <TableColumnItem><PropertyName>Relevance</PropertyName></TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($_.Error) { 'Error' } else { 'Success' }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem><PropertyName>Time</PropertyName></TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($_.EvaluationTime) { [TimeSpan]::FromMilliseconds($_.EvaluationTime) } else { '' }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if (@($_.Results).Count) { @($_.Results).Count.ToString('N0') } else { 0 }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                            <TableColumnItem>
+                                <ScriptBlock>
+                                    if ($_.Error) { $_.Error } else { @($_.Results) }
+                                </ScriptBlock>
+                            </TableColumnItem>
+                        </TableColumnItems>
+                    </TableRowEntry>
+                </TableRowEntries>
+            </TableControl>
+        </View>
+    </ViewDefinitions>
+</Configuration>
