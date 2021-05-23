@@ -55,6 +55,7 @@ function Invoke-EvaluateSessionRelevance {
     )]
     [string[]]$FieldNames = $null
   )               
+  
   Begin {
     if ($null -eq $Session) {
       throw "Cannot validate argument on parameter 'Session'. The argument is null. Call New-WebReportsSession first or provide a valid value for the argument, and then try running the command again."
@@ -100,12 +101,7 @@ function Invoke-EvaluateSessionRelevance {
         $result.Error = $structuredResult.error
       } 
       else {
-        $results = New-Object System.Collections.ArrayList -ArgumentList $structuredResult.results.Items.Count
-        foreach ($item in $structuredResult.results.Items) {
-          $parsedResult = ParseStructuredResult -Result $item -FieldNames $FieldNames
-          $null = $results.Add($parsedResult)
-        }
-        $result.Results = $results.ToArray()
+        $result.Results = Expand-StructuredRelevanceResult -InputObject $structuredResult -FieldNames $FieldNames
       }
     }
     catch {

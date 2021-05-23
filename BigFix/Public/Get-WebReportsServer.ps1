@@ -13,8 +13,15 @@ function Get-WebReportsServer {
     Specifies the well-formed absolute URI of the registered Web Reports Server object to return.
 
    .Parameter Default
-    Switch specifing that the default registered Web Reports Server object is to be returned.
+    Switch specifying that the default registered Web Reports Server object is to be returned.
    
+   .Inputs
+    A System.String specifying the well-formed absolute URI of the registered Web Reports Server object
+    to return.
+
+   .Outputs
+    A BigFix.WebReports.Server object representing a specific Web Reports Server.
+
    .Example
     # Gets a listing of all registered Web Reports Server objects.
     Get-WebReportsServer

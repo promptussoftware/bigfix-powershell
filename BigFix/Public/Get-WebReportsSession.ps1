@@ -18,7 +18,7 @@ function Get-WebReportsSession {
   $Session = Get-Variable -Name WebReportsSession -ValueOnly -Scope Script -ErrorAction SilentlyContinue
 
   if ($null -eq $Session) {
-    throw 'No previouslly created Web Reports Session was found. Use New-WebReportsSession to create a new instance.'
+    throw 'No previously created Web Reports Session was found. Use New-WebReportsSession to create a new instance.'
   }
 
   return $Session

@@ -8,7 +8,7 @@ function New-WebReportsSession {
     This session object is used by the other cmdlets in this module. 
    
    .Parameter Default
-    Use the default Web Reports Server previouslly defined to establish the session
+    Use the default Web Reports Server previously defined to establish the session
     with. The default Web Reports Server is the last one created using 
     New-WebReportsServer or Set-WebReportsServer. Get-WebReportsServer -Default will
     return the current default.
@@ -23,23 +23,23 @@ function New-WebReportsSession {
     if one is not already found matching the URI.
   
    .Parameter Credential
-    Specifies the Web Reports account either as "myuser", "domain\myusern", or a 
+    Specifies the Web Reports account either as "myuser", "domain\myuser", or a 
     PSCredential object. Omitting or providing a $null or 
     [System.Management.Automation.PSCredential]::Empty will prompt the caller.
   
    .Example
     # Create a Web Reports Session object to the default Web Reports Server, 
-    # prompting for credentails.
+    # prompting for credentials.
     New-WebReportsSession -Default
 
    .Example
     # Create a Web Reports Session object to the Web Reports Server defined in 
-    # the $MyServer variable, prompting for credentails.
+    # the $MyServer variable, prompting for credentials.
     New-WebReportsSession -Server $MyServer
 
    .Example
     # Create a Web Reports Session object to the server 'webreports' over HTTPS, 
-    # prompting for credentails.
+    # prompting for credentials.
     New-WebReportsSession -Uri 'https://webreports/'
   
    .Example
@@ -54,7 +54,7 @@ function New-WebReportsSession {
   
    .Example
     # Create a Web Reports Session object to the server 'webreports' over HTTPS, 
-    # using the [PSCredentail] credential object in the variable $credential.
+    # using the [PSCredential] credential object in the variable $credential.
     New-WebReportsSession -Uri 'https://webreports/' -Credential $credential
   
   #>

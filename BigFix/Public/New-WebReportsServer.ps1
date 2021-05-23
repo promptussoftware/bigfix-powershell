@@ -19,10 +19,10 @@ function New-WebReportsServer {
     port is being used.
 
    .Parameter Ssl
-    Switch specifing if SSL (HTTPS) is to be used when connecting to the Web Reports Server.
+    Switch specifying if SSL (HTTPS) is to be used when connecting to the Web Reports Server.
 
    .Parameter NoPersist
-    Switch specifing that the Web Reports Server object created not be persisted to the 
+    Switch specifying that the Web Reports Server object created not be persisted to the 
     registry nor set as the default.
    
    .Example
