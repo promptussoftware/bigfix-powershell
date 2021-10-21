@@ -1,20 +1,20 @@
 function Get-WebReportsServer {
-  <#  
+  <#
    .Synopsis
     Gets registered Web Reports Server objects.
-  
+
    .Description
-    Gets registered Web Reports Server objects. When called without parameters, a listing of 
+    Gets registered Web Reports Server objects. When called without parameters, a listing of
     all registered Web Reports Server objects will be returned. If a URI is provided, attempt
     to return the matching Web Reports Server object. If called with the -Default switch, the
     registered default Web Reports Server object will be returned (if found).
-   
+
    .Parameter Uri
     Specifies the well-formed absolute URI of the registered Web Reports Server object to return.
 
    .Parameter Default
     Switch specifying that the default registered Web Reports Server object is to be returned.
-   
+
    .Inputs
     A System.String specifying the well-formed absolute URI of the registered Web Reports Server object
     to return.
@@ -38,7 +38,7 @@ function Get-WebReportsServer {
   #>
   [CmdletBinding()]
   [OutputType('BigFix.WebReports.Server')]
-  param(
+  Param(
     [Parameter(
       Mandatory = $false,
       Position = 0,
@@ -53,7 +53,7 @@ function Get-WebReportsServer {
     )]
     [Switch] $Default = $false
   )
-  
+
   if ($Default -eq $true) {
     return Get-Variable -Name WebReportsServersDefault -ValueOnly -Scope Script -ErrorAction SilentlyContinue
   }
@@ -61,7 +61,7 @@ function Get-WebReportsServer {
   $Servers = Get-Variable -Name WebReportsServers -ValueOnly -Scope Script -ErrorAction SilentlyContinue
 
   if ($null -eq $Uri -or $Uri -eq "") {
-    return @($Servers)
+    return [BigFix.WebReports.Server[]]@($Servers)
   }
 
   foreach ($server in @($Servers)) {
@@ -70,5 +70,5 @@ function Get-WebReportsServer {
     }
   }
 
-  return 
+  return
 }

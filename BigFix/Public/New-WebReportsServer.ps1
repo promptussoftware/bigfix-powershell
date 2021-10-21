@@ -1,15 +1,15 @@
 function New-WebReportsServer {
-  <#  
+  <#
    .Synopsis
     Creates a new Web Reports Server object.
-  
+
    .Description
     Creates a new Web Reports Server object to use when calling New-WebReportsSession,
-    and [optionally] both registers and sets it as the default Web Reports Server object. 
-   
+    and [optionally] both registers and sets it as the default Web Reports Server object.
+
    .Parameter Uri
     Specifies a well-formed absolute URI to the Web Reports Server.
-  
+
    .Parameter Fqdn
     Specifies the Fully Qualified Domain Name (FQDN) of the Web Reports Server. This
     can be entered either as just the hostname, IP address, or the FQDN (preferred).
@@ -22,9 +22,9 @@ function New-WebReportsServer {
     Switch specifying if SSL (HTTPS) is to be used when connecting to the Web Reports Server.
 
    .Parameter NoPersist
-    Switch specifying that the Web Reports Server object created not be persisted to the 
+    Switch specifying that the Web Reports Server object created not be persisted to the
     registry nor set as the default.
-   
+
    .Example
     # Create a new Web Reports Server object to the server 'webreports' over HTTPS,
     # using URI nomenclature.
@@ -44,7 +44,7 @@ function New-WebReportsServer {
     # Create a new Web Reports Server object to the server 'webreports' over HTTP on
     # the non-standard TCP port (8080).
     New-WebReportsServer -Fqdn 'webreports' -Port 8080
-    
+
    .Example
     # Create a new Web Reports Server object to the server 'webreports' over HTTP on
     # the non-standard TCP port (8080) and request it to be non-persisted.
@@ -68,10 +68,10 @@ function New-WebReportsServer {
   #>
   [CmdLetBinding(DefaultParameterSetName = 'URI')]
   [OutputType('BigFix.WebReports.Server')]
-  param(
+  Param(
     [Parameter(
-      Mandatory = $true, 
-      Position = 0, 
+      Mandatory = $true,
+      Position = 0,
       ParameterSetName = 'URI',
       HelpMessage = 'Well-formed absolute URI to the Web Reports Server (e.g. https://webreports/)'
     )]
@@ -115,7 +115,7 @@ function New-WebReportsServer {
     if ($null -eq $ParsedUri) {
       throw "Cannot validate argument on parameter 'Uri'. The argument ""$($Uri)"" is not a well-formed absolute HTTP or HTTPS URI. Supply an argument that is a well-formed absolute HTTP or HTTPS URI and try the command again."
     }
-      
+
     $Fqdn = $ParsedUri.Host
     $Port = if ($ParsedUri.IsDefaultPort) { -1 } else { $ParsedUri.Port }
     $Ssl = $ParsedUri.Scheme -eq [System.Uri]::UriSchemeHttps
@@ -125,7 +125,7 @@ function New-WebReportsServer {
       throw "Cannot validate argument on parameter 'Fqdn'. The argument ""$($Fqdn)"" is not a valid FQDN. Supply an argument that is a FQDN and try the command again."
     }
   }
-  
+
   $scheme = if ($Ssl) { [System.Uri]::UriSchemeHttps } else { [System.Uri]::UriSchemeHttp }
   [System.UriBuilder]$uriBuilder = New-Object -TypeName System.UriBuilder -ArgumentList $scheme, $Fqdn, $Port
   $Uri = $uriBuilder.ToString()
@@ -138,8 +138,8 @@ function New-WebReportsServer {
     Wsdl       = $uriBuilder.ToString()
   }
   $server = $server | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Uri } -Force -PassThru
-  
-  if ($NoPersist -ne $true) {
+
+  if ($true -ne $NoPersist) {
     $null = Set-WebReportsServer -Server $server
   }
 

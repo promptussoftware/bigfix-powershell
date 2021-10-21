@@ -1,24 +1,24 @@
 function New-QnaSession {
-  <#  
+  <#
    .Synopsis
     Instantiate a new Qna Session object.
-  
+
    .Description
     Creates a new Qna Session object and expose it into the current scope. By default, it
-    will attempt to link to the qna.exe utility application binary using the following 
-    search path order: 
+    will attempt to link to the qna.exe utility application binary using the following
+    search path order:
       1. Directory defined within the environmental variable 'QnA'.
       2. Current working directory.
-      3. Directory where the BigFix Client is registered 
-      4. Every directory defined within the environmental variable 'PATH', in the order it 
+      3. Directory where the BigFix Client is registered.
+      4. Every directory defined within the environmental variable 'PATH', in the order it
          is defined.
-      
-    If called with the -ExecutablePath parameter and provided with the full path of the 
+
+    If called with the -ExecutablePath parameter and provided with the full path of the
     qna.exe utility, the session will attempt to link to that binary.
-   
+
    .Parameter ExecutablePath
     Path to the BigFix Qna utility executable (i.e. qna.exe)
-   
+
    .Inputs
     None. This function does not accept pipeline input.
 
@@ -37,14 +37,14 @@ function New-QnaSession {
     #>
   [CmdletBinding()]
   [OutputType('BigFix.Qna.Session')]
-  param (
+  Param (
     [Parameter(
       Mandatory = $false,
       HelpMessage = 'Path to the BigFix Qna utility executable (i.e. qna.exe)'
     )]
     [string]$ExecutablePath = $null
   )
-  
+
   try {
     $Session = $null
 

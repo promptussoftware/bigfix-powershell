@@ -1,73 +1,74 @@
 function New-WebReportsSession {
-  <#  
+  <#
    .Synopsis
     Create a Web Reports Session object.
-  
+
    .Description
-    Creates a new Web Reports Session object exposing the BigFix Web Reports SOAP API. 
-    This session object is used by the other cmdlets in this module. 
-   
+    Creates a new Web Reports Session object exposing the BigFix Web Reports SOAP API.
+    This session object is used by the other cmdlets in this module.
+
    .Parameter Default
     Use the default Web Reports Server previously defined to establish the session
-    with. The default Web Reports Server is the last one created using 
+    with. The default Web Reports Server is the last one created using
     New-WebReportsServer or Set-WebReportsServer. Get-WebReportsServer -Default will
     return the current default.
 
    .Parameter Server
     Specifies the Web Reports Server object (created using New-WebReportsServer
-    or returned from Get-WebReportsServer) to establish the session with. 
+    or returned from Get-WebReportsServer) to establish the session with.
 
    .Parameter Uri
-    Specifies a well-formed absolute URI to the Web Reports Server to establish 
+    Specifies a well-formed absolute URI to the Web Reports Server to establish
     the session with. A new Web Reports Server object will be registered
     if one is not already found matching the URI.
-  
+
    .Parameter Credential
-    Specifies the Web Reports account either as "myuser", "domain\myuser", or a 
-    PSCredential object. Omitting or providing a $null or 
+    Specifies the Web Reports account either as "myuser", "domain\myuser", or a
+    PSCredential object. Omitting or providing a $null or
     [System.Management.Automation.PSCredential]::Empty will prompt the caller.
-  
+
    .Example
-    # Create a Web Reports Session object to the default Web Reports Server, 
+    # Create a Web Reports Session object to the default Web Reports Server,
     # prompting for credentials.
     New-WebReportsSession -Default
 
    .Example
-    # Create a Web Reports Session object to the Web Reports Server defined in 
+    # Create a Web Reports Session object to the Web Reports Server defined in
     # the $MyServer variable, prompting for credentials.
     New-WebReportsSession -Server $MyServer
 
    .Example
-    # Create a Web Reports Session object to the server 'webreports' over HTTPS, 
+    # Create a Web Reports Session object to the server 'webreports' over HTTPS,
     # prompting for credentials.
     New-WebReportsSession -Uri 'https://webreports/'
-  
+
    .Example
     # Create a Web Reports Session object to the server 'webreports' over HTTP,
     # prompting for credentials.
     New-WebReportsSession -Uri 'http://webreports/'
-  
+
    .Example
     # Create a Web Reports Session object to the server 'webreports' over HTTP
     # on port 8080, prompting for credentials.
     New-WebReportsSession -Uri 'http://webreports:8080/'
-  
+
    .Example
-    # Create a Web Reports Session object to the server 'webreports' over HTTPS, 
+    # Create a Web Reports Session object to the server 'webreports' over HTTPS,
     # using the [PSCredential] credential object in the variable $credential.
     New-WebReportsSession -Uri 'https://webreports/' -Credential $credential
-  
+
   #>
   [CmdletBinding(DefaultParameterSetName = 'URI')]
   [OutputType('BigFix.WebReports.Session')]
-  param (
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Default', Justification = 'This is a false positive. Rule does not validate $PSCmdlet.ParameterSetName switch usage checks.')]
+  Param (
     [Parameter(
       Mandatory = $true,
       ParameterSetName = 'DEFAULT',
       HelpMessage = 'Use the default Web Reports Server (see Set-WebReportsServer)'
     )]
     [Switch]$Default,
-  
+
     [Parameter(
       Mandatory = $true,
       Position = 0,
@@ -92,9 +93,9 @@ function New-WebReportsSession {
     )]
     [ValidateNotNull()]
     [System.Management.Automation.Credential()]
-    [System.Management.Automation.PSCredential]$Credential = [System.Management.Automation.PSCredential]::Empty        
+    [System.Management.Automation.PSCredential]$Credential = [System.Management.Automation.PSCredential]::Empty
   )
-  
+
   if ('DEFAULT' -eq $PSCmdlet.ParameterSetName) {
     $Server = Get-WebReportsServer -Default
 
@@ -112,7 +113,7 @@ function New-WebReportsSession {
     SessionToken      = $null
     MaximumParseDepth = 6
   }
-      
+
   $connect = {
     if ('Connected' -eq $this.State) {
       Write-Verbose -Message "Already connected to Web Reports Server: $($this.Server)"
@@ -125,9 +126,9 @@ function New-WebReportsSession {
 
       if ($null -eq $credential) {
         Write-Verbose -Message 'Account credentials were not provided!'
-          
+
         $this.State = 'Error'
-          
+
         return $false
       }
 
@@ -142,18 +143,18 @@ function New-WebReportsSession {
 
         if ($null -eq $this.Service) {
           Write-Verbose -Message "Unable to obtain and/or instantiate the Web Reports API service descriptor '$($this.Server.Wsdl)'!"
-                  
+
           $this.State = 'Error'
-          
+
           return $false
         }
       }
-      catch { 
+      catch {
         Write-Verbose -Message "Unable to obtain and/or instantiate the Web Reports API service descriptor '$($this.Server.Wsdl)'!"
         Write-Verbose -Message $PSItem
-          
+
         $this.State = 'Error'
-          
+
         return $false
       }
     }
@@ -161,7 +162,7 @@ function New-WebReportsSession {
     Write-Verbose -Message "Connecting to Web Reports Server: $($this.Server)"
     try {
       $this.State = 'Connecting'
-          
+
       $version = $this.Evaluate('maximum of versions of modules')
 
       if ($version.Error) {
@@ -179,16 +180,16 @@ function New-WebReportsSession {
     catch [System.Management.Automation.MethodInvocationException] {
       Write-Verbose -Message "Failed to connect to Web Reports Server: $($this.Server)"
       Write-Verbose -Message $PSItem.Exception.InnerException
-          
+
       $this.State = 'Error'
-          
+
       return $false
     }
     catch {
       Write-Verbose -Message "Failed to connect to Web Reports Server: $($this.Server)"
 
       $this.State = 'Error'
-          
+
       return $false
     }
 
@@ -198,7 +199,7 @@ function New-WebReportsSession {
   $disconnect = {
     if ('Connected' -eq $this.State) {
       $this.State = 'Disconnected'
-          
+
       Write-Verbose -Message "Disconnected from Web Reports Server: $($this.Server)"
       return $true
     }
@@ -210,12 +211,12 @@ function New-WebReportsSession {
   $evaluate = {
     param(
       [Parameter(
-        Mandatory = $true, 
-        Position = 0, 
+        Mandatory = $true,
+        Position = 0,
         HelpMessage = 'Session Relevance statement to evaluate'
       )]
       [ValidateNotNullOrEmpty()]
-      [string]$Relevance, 
+      [string]$Relevance,
 
       [Parameter(
         Mandatory = $false,
@@ -231,14 +232,14 @@ function New-WebReportsSession {
   $session = $session | Add-Member -MemberType ScriptMethod -Name Connect -Value $connect -Force -PassThru
   $session = $session | Add-Member -MemberType ScriptMethod -Name Disconnect -Value $disconnect -Force -PassThru
   $session = $session | Add-Member -MemberType ScriptMethod -Name Evaluate -Value $evaluate -Force -PassThru
-  
+
   $null = $session.Connect()
 
   if ('Error' -eq $session.State) {
     throw 'Unable to create a new WebReportsSession.'
   }
-  
+
   $null = Set-Variable -Name WebReportsSession -Value $session -Scope Script -Force
-  
+
   return $session
 }

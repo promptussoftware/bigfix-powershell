@@ -1,18 +1,18 @@
 function Expand-StructuredRelevanceResult {
-  <#  
+  <#
    .Synopsis
     Expand a Structured Relevance Result.
-  
+
    .Description
     This module internal function is used to expand the Structured Relevance Result objects
     returned as a result of calling the Web Reports SOAP API's GetStructuredRelevanceResult
     method into a more PowerShell friendly object.
-   
-   .Parameter InputObject
+
+    .Parameter InputObject
     The Structured Relevance Result object to expand.
-   
+
    .Parameter FieldNames
-    Array of strings representing the names for each resultant tuple field. 
+    Array of strings representing the names for each resultant tuple field.
 
    .Parameter Prefix
     Prefix to use for auto-generated resultant tuple field names (Default: Field_).
@@ -42,20 +42,22 @@ function Expand-StructuredRelevanceResult {
     Expand-StructuredRelevanceResult -InputObject $StructuredResult -FieldNames Id, Name, Value
 
    .Example
-    # Expand a Structured Relevance Result object using auto-generated resultant tuple field names 
+    # Expand a Structured Relevance Result object using auto-generated resultant tuple field names
     # prefixed with 'F_' (e.g. 'F_0', 'F_1', ...).
     Expand-StructuredRelevanceResult -InputObject $StructuredResult
 
     #>
   [CmdletBinding()]
-  param(
+  [OutputType([System.Array])]
+  [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Prefix', Justification = 'This is a false positive. Rule does not validate string interpolation usage.')]
+  Param(
     [Parameter(
       Mandatory = $true,
       Position = 0,
       ValueFromPipeline = $true,
       HelpMessage = 'The Structured Relevance Result object to expand.'
     )]
-    [object]$InputObject, 
+    [object]$InputObject,
 
     [Parameter(
       Mandatory = $false,
@@ -70,47 +72,51 @@ function Expand-StructuredRelevanceResult {
     )]
     [string]$Prefix = 'Field_'
   )
-  
-  $ExtractValue = [ScriptBlock] {
-    param($Item)
-    if ($Item.Items) {
-      & $ExtractValue $Item.Items
-    }
-    else {
-      $Item
+
+  Begin {
+    $ExtractValue = [ScriptBlock] {
+      param($Item)
+      if ($Item.Items) {
+        & $ExtractValue $Item.Items
+      }
+      else {
+        $Item
+      }
     }
   }
 
-  foreach ($Item in $InputObject) {
-    if ($Item.results) {
-      $Hash = [ordered]@{}
-      foreach ($Result in $Item.results.Items) {
-        if ($Result.Items) {
-          $ExpandedItems = & $ExtractValue $Result.Items
-        }
-        else {
-          $ExpandedItems = $Result
-        }
-
-        if ($null -eq $FieldNames) {
-          @(, $ExpandedItems)
-        }
-        else {
-          $FieldsCount = $FieldNames.Count
-          if ($FieldsCount -lt $ExpandedItems.Count) {
-            $FieldNames += (0 .. ($ExpandedItems.Count - $FieldsCount)) | ForEach-Object { "$($Prefix)$($FieldCount + $_)" }
+  Process {
+    foreach ($Item in $InputObject) {
+      if ($Item.results) {
+        $Hash = [ordered]@{}
+        foreach ($Result in $Item.results.Items) {
+          if ($Result.Items) {
+            $ExpandedItems = & $ExtractValue $Result.Items
+          }
+          else {
+            $ExpandedItems = $Result
           }
 
-          $Index = 0
-          foreach ($ExpandedItem in $ExpandedItems) {
-            $Hash[$FieldNames[$Index++]] = $ExpandedItem
+          if ($null -eq $FieldNames) {
+            @(, $ExpandedItems)
           }
-          [PSCustomObject]$Hash
+          else {
+            $FieldsCount = $FieldNames.Count
+            if ($FieldsCount -lt $ExpandedItems.Count) {
+              $FieldNames += (0 .. ($ExpandedItems.Count - $FieldsCount)) | ForEach-Object { "$($Prefix)$($FieldCount + $_)" }
+            }
+
+            $Index = 0
+            foreach ($ExpandedItem in $ExpandedItems) {
+              $Hash[$FieldNames[$Index++]] = $ExpandedItem
+            }
+            [PSCustomObject]$Hash
+          }
         }
       }
-    }
-    elseif ($Item.Items) {
-      Expand-StructuredRelevanceResult -InputObject @{ InputObject = $Item }
+      elseif ($Item.Items) {
+        Expand-StructuredRelevanceResult -InputObject @{ InputObject = $Item }
+      }
     }
   }
 }

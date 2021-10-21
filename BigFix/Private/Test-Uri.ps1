@@ -2,10 +2,10 @@ function Test-Uri {
     [CmdletBinding()]
     [OutputType([boolean])]
     [OutputType([string], [System.Uri], ParameterSetName = 'PASSTHRU')]
-    param(
+    Param(
         [Parameter(
-            Mandatory = $true, 
-            Position = 0, 
+            Mandatory = $true,
+            Position = 0,
             ValueFromPipeline = $true,
             HelpMessage = 'URI to validate'
         )]
@@ -41,7 +41,7 @@ function Test-Uri {
             Mandatory = $false,
             HelpMessage = 'Throw instead of just returning $false'
         )]
-        [Switch]$Throw = $false        
+        [Switch]$Throw = $false
     )
 
     Begin {
@@ -59,12 +59,12 @@ function Test-Uri {
         Write-Debug -Message "Testing '$($Uri)' is a well-formed URI of kind $($UriKind)"
         if ([System.Uri]::IsWellFormedUriString($Uri, $UriKind) -eq $false) {
             $Message = "Uri '$($Uri)' is NOT well-formed"
-            
+
             if ($Throw) {
                 throw $Message
-            } 
-            
-            Write-Verbose -Message $Message            
+            }
+
+            Write-Verbose -Message $Message
             if (!$PassThru) {
               $false
             }
@@ -75,11 +75,11 @@ function Test-Uri {
         [System.Uri]$ParsedUri = $null
         if ([System.Uri]::TryCreate($Uri, $UriKind, [ref] $ParsedUri) -eq $false) {
             $Message = "Uri '$($Uri)' is NOT instantiatable"
-            
+
             if ($Throw) {
                 throw $Message
-            } 
-            
+            }
+
             Write-Verbose -Message $Message
             if (!$PassThru) {
               $false
@@ -94,7 +94,7 @@ function Test-Uri {
             Foreach($Match in @($Scheme)) {
                 if ($Match -eq $ParsedUri.Scheme) {
                     Write-Debug -Message "Uri '$($Uri)' is using the scheme '$($Match)'"
-                    
+
                     $Matched = $true
                     break
                 } else {
@@ -104,11 +104,11 @@ function Test-Uri {
 
             if ($Matched -eq $false) {
                 $Message = "Uri '$($Uri)' is NOT using an acceptable scheme"
-                
+
                 if ($Throw) {
                     throw $Message
                 }
-            
+
                 Write-Verbose -Message $Message
                 if (!$PassThru) {
                   $false
@@ -116,15 +116,15 @@ function Test-Uri {
                 return
             }
         }
-        
-        if ($PassThru) { 
-          if ($Transform) { 
-            $ParsedUri 
-          } else { 
-            $Uri 
-          } 
-        } else { 
-          $true 
+
+        if ($PassThru) {
+          if ($Transform) {
+            $ParsedUri
+          } else {
+            $Uri
+          }
+        } else {
+          $true
         }
         return
     }

@@ -6,8 +6,8 @@ $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -Exclude *.tests.p
 
 # Dot source the function definition files
 Foreach ($file in @($Public + $Private)) {
-  Try { 
-    . $file.FullName 
+  Try {
+    . $file.FullName
   }
   Catch {
     Write-Error -Message "Failed to import function definition(s) from '$($file.FullName)': $_"

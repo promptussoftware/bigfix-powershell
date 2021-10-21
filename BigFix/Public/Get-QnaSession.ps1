@@ -1,18 +1,18 @@
 function Get-QnaSession {
-  <#  
+  <#
    .Synopsis
     Gets the previously instantiated Qna Session object.
-  
+
    .Description
-    The Get-QnaSession function is used to obtain the Qna Session object last instantiated  
+    The Get-QnaSession function is used to obtain the Qna Session object last instantiated
     by a call to New-QnaSession in the current scope. If called with the -Throw switch, the
     call will throw a fault in the event that no previously instantiated Qna Session object
     is found.
-   
+
    .Parameter Throw
-    Switch specifying that the call should throw a fault in the event that no previously 
+    Switch specifying that the call should throw a fault in the event that no previously
     instantiated Qna Session object is found.
-   
+
    .Inputs
     None. This function does not accept pipeline input.
 
@@ -31,14 +31,14 @@ function Get-QnaSession {
     #>
   [CmdletBinding()]
   [OutputType('BigFix.Qna.Session')]
-  param (
+  Param (
     [Parameter(
       Mandatory = $false,
       HelpMessage = 'Throw an error if no previously created Qna Session was found.'
     )]
     [Switch]$Throw = $false
   )
-    
+
   $Session = Get-Variable -Name QnaSession -ValueOnly -Scope Script -ErrorAction SilentlyContinue
 
   if ($null -ne $Session) {

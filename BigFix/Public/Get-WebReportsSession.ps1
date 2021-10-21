@@ -1,11 +1,11 @@
 function Get-WebReportsSession {
-  <#  
+  <#
    .Synopsis
     Gets the current Web Reports Session.
-  
+
    .Description
     Gets the current Web Reports Session created during the last call to New-WebReportsSession.
-   
+
    .Example
     # Get the current Web Reports Session.
     Get-WebReportsSession
@@ -13,7 +13,7 @@ function Get-WebReportsSession {
   #>
   [CmdletBinding()]
   [OutputType('BigFix.WebReports.Session')]
-  param()
+  Param()
 
   $Session = Get-Variable -Name WebReportsSession -ValueOnly -Scope Script -ErrorAction SilentlyContinue
 
